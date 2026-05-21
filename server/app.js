@@ -4,6 +4,7 @@ const db = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const vehicleRoutes = require("./routes/vehicleRoutes");
 const bookingRoutes = require("./routes/bookingRoutes");
+const invoiceRoutes = require("./routes/invoiceRoutes");
 
 const app = express();
 
@@ -13,6 +14,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/vehicles", vehicleRoutes);
 app.use("/api/service-bookings", bookingRoutes);
+app.use("/api/invoices", invoiceRoutes);
 
 app.get("/", (req, res) => {
   res.send("GaragePoint API Running");
@@ -47,6 +49,16 @@ db.serialize(() => {
           booking_date TEXT,
           status TEXT,
           mechanic_name TEXT
+        )
+      `);
+
+    db.run(`
+        CREATE TABLE IF NOT EXISTS invoices (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          booking_id INTEGER,
+          service_charge REAL,
+          spare_parts_cost REAL,
+          total REAL
         )
       `);
 });
