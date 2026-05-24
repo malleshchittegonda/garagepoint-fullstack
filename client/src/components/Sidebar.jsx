@@ -1,9 +1,23 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import "../styles/Sidebar.css";
 
 function Sidebar() {
+
+  const navigate = useNavigate();
+
+  const logout = () => {
+
+    localStorage.removeItem("token");
+
+    localStorage.removeItem("user");
+
+    navigate("/login");
+
+  };
+
   return (
+
     <div className="sidebar">
 
       <h2 className="sidebar-logo">
@@ -28,13 +42,14 @@ function Sidebar() {
           <li>Invoices</li>
         </Link>
 
-        <Link to="/">
-          <li>Logout</li>
-        </Link>
+        <li onClick={logout}>
+          Logout
+        </li>
 
       </ul>
 
     </div>
+
   );
 }
 

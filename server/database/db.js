@@ -39,6 +39,20 @@ db.serialize(() => {
 
 `);
 
+    db.run(`
+
+  CREATE TABLE IF NOT EXISTS bookings (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    vehicleNumber TEXT,
+    serviceType TEXT,
+    bookingDate TEXT,
+    notes TEXT,
+    status TEXT,
+    assignedMechanic TEXT
+  )
+
+`);
+
 });
 
 module.exports = db;

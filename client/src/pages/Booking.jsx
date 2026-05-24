@@ -1,8 +1,116 @@
+import {
+  useState,
+  useEffect
+} from "react";
+
 import Sidebar from "../components/Sidebar";
+
 import "../styles/Booking.css";
 
+import API from "../services/api";
+
 function Booking() {
+
+  const [bookingData, setBookingData] =
+    useState({
+      vehicleNumber: "",
+      serviceType: "",
+      bookingDate: "",
+      notes: "",
+    });
+
+  const [bookings, setBookings] =
+    useState([]);
+
+  const handleChange = (e) => {
+
+    setBookingData({
+      ...bookingData,
+      [e.target.name]: e.target.value,
+    });
+
+  };
+
+  const fetchBookings = async () => {
+
+    try {
+
+      const res = await API.get(
+        "/bookings"
+      );
+
+      setBookings(res.data);
+
+    } catch (error) {
+
+      console.log(error);
+
+    }
+
+  };
+
+  useEffect(() => {
+
+    fetchBookings();
+
+  }, []);
+
+  const updateBooking = async (id) => {
+
+  try {
+
+    await API.put(
+      `/bookings/${id}`,
+      {
+        status: "Completed",
+        assignedMechanic: "Ramesh"
+      }
+    );
+
+    fetchBookings();
+
+  } catch (error) {
+
+    console.log(error);
+
+  }
+
+};
+
+  const handleSubmit = async (e) => {
+
+    e.preventDefault();
+
+    try {
+
+      await API.post(
+        "/bookings",
+        bookingData
+      );
+
+      alert(
+        "Booking Created Successfully"
+      );
+
+      fetchBookings();
+
+      setBookingData({
+        vehicleNumber: "",
+        serviceType: "",
+        bookingDate: "",
+        notes: "",
+      });
+
+    } catch (error) {
+
+      alert("Booking Failed");
+
+    }
+
+  };
+
   return (
+
     <div className="booking-container">
 
       <Sidebar />
@@ -15,10 +123,6 @@ function Booking() {
             Service Booking
           </h1>
 
-          <div className="profile-box">
-            Mallesh
-          </div>
-
         </div>
 
         <div className="booking-sections">
@@ -26,27 +130,26 @@ function Booking() {
           <div className="booking-form">
 
             <h2>
-              Book New Service
+              Book Service
             </h2>
 
-            <form>
+            <form onSubmit={handleSubmit}>
 
-              <select>
-                <option>
-                  Select Vehicle
-                </option>
+              <input
+                type="text"
+                name="vehicleNumber"
+                placeholder="Vehicle Number"
+                value={bookingData.vehicleNumber}
+                onChange={handleChange}
+              />
 
-                <option>
-                  TS09 EE 1234
-                </option>
+              <select
+                name="serviceType"
+                value={bookingData.serviceType}
+                onChange={handleChange}
+              >
 
-                <option>
-                  AP39 AB 5678
-                </option>
-              </select>
-
-              <select>
-                <option>
+                <option value="">
                   Select Service
                 </option>
 
@@ -61,17 +164,24 @@ function Booking() {
                 <option>
                   Brake Service
                 </option>
+
               </select>
 
               <input
                 type="date"
+                name="bookingDate"
+                value={bookingData.bookingDate}
+                onChange={handleChange}
               />
 
               <textarea
+                name="notes"
                 placeholder="Additional Notes"
+                value={bookingData.notes}
+                onChange={handleChange}
               ></textarea>
 
-              <button>
+              <button type="submit">
                 Book Service
               </button>
 
@@ -94,35 +204,85 @@ function Booking() {
                   <th>Service</th>
                   <th>Date</th>
                   <th>Status</th>
+                  <th>Mechanic</th>
+                  <th>Action</th>
                 </tr>
 
               </thead>
 
               <tbody>
 
-                <tr>
-                  <td>TS09 EE 1234</td>
-                  <td>Oil Change</td>
-                  <td>26 May 2026</td>
+                {
 
-                  <td>
-                    <span className="pending">
-                      Pending
-                    </span>
-                  </td>
-                </tr>
+                  bookings.map((booking) => (
 
-                <tr>
-                  <td>AP39 AB 5678</td>
-                  <td>Brake Service</td>
-                  <td>28 May 2026</td>
+                    <tr key={booking.id}>
 
-                  <td>
-                    <span className="completed">
-                      Completed
-                    </span>
-                  </td>
-                </tr>
+                      <td>
+                        {booking.vehicleNumber}
+                      </td>
+
+                      <td>
+                        {booking.serviceType}
+                      </td>
+
+                      <td>
+                        {booking.bookingDate}
+                      </td>
+
+                      <td>
+
+                        <span className="pending">
+
+                          <td>
+
+  <span
+    className={
+      booking.status === "Completed"
+      ? "completed"
+      : "pending"
+    }
+  >
+
+    {booking.status}
+
+  </span>
+
+</td>
+
+<td>
+
+  {
+    booking.assignedMechanic
+      || "Not Assigned"
+  }
+
+</td>
+
+<td>
+
+  <button
+    className="complete-btn"
+    onClick={() =>
+      updateBooking(booking.id)
+    }
+  >
+
+    Complete
+
+  </button>
+
+</td>
+
+                        </span>
+
+                      </td>
+
+                    </tr>
+
+                  ))
+
+                }
 
               </tbody>
 
@@ -135,6 +295,7 @@ function Booking() {
       </div>
 
     </div>
+
   );
 }
 

@@ -1,91 +1,133 @@
 const express = require("express");
-const db = require("../config/db");
 
 const router = express.Router();
 
-//Create Booking
+const db = require("../database/db");
+
 router.post("/", (req, res) => {
-    const {
-        vehicle_id,
-        service_type,
-        booking_date,
-        mechanic_name
-    } = req.body;
 
-    const sql = `
-        INSERT INTO service_bookings(
-            vehicle_id,
-            service_type,
-            booking_date,
-            status,
-            mechanic_name
-        )
-        VALUES (?, ?, ?, ?, ?)
-        `;
+  const {
+    vehicleNumber,
+    serviceType,
+    bookingDate,
+    notes
+  } = req.body;
 
-    db.run(
-        sql,
-        [
-            vehicle_id,
-            service_type,
-            booking_date,
-            "Booked",
-            mechanic_name
-        ],
-        function (err) {
-            if (err) {
-                return res.status(500).json({
-                    message: err.message
-                });
-            }
+  const sql = `
+    
+    INSERT INTO bookings
+    (
+      vehicleNumber,
+      serviceType,
+      bookingDate,
+      notes,
+      status
+    )
 
-            res.json({
-                message: "Service Booked"
-            });
-        }
-    );
+    VALUES (?, ?, ?, ?, ?)
+
+  `;
+
+  db.run(
+    sql,
+    [
+      vehicleNumber,
+      serviceType,
+      bookingDate,
+      notes,
+      "Pending"
+    ],
+    function(err) {
+
+      if (err) {
+
+        return res.status(500).json({
+          message: err.message
+        });
+
+      }
+
+      res.json({
+        message: "Booking Created Successfully"
+      });
+
+    }
+  );
+
 });
 
-//Get All Bookings
 router.get("/", (req, res) => {
-    db.all(
-        `SELECT * FROM service_bookings`,
-        [],
-        (err, rows) => {
-            if (err) {
-                return res.status(500).json({
-                    message: err.message
-                });
-            }
 
-            res.json(rows);
-        }
-    );
+  const sql = `
+    
+    SELECT * FROM bookings
+    
+    ORDER BY id DESC
+
+  `;
+
+  db.all(sql, [], (err, rows) => {
+
+    if (err) {
+
+      return res.status(500).json({
+        message: err.message
+      });
+
+    }
+
+    res.json(rows);
+
+  });
+
+  router.put("/:id", (req, res) => {
+
+  const id = req.params.id;
+
+  const {
+    status,
+    assignedMechanic
+  } = req.body;
+
+  const sql = `
+    
+    UPDATE bookings
+    
+    SET
+      status = ?,
+      assignedMechanic = ?
+    
+    WHERE id = ?
+
+  `;
+
+  db.run(
+    sql,
+    [
+      status,
+      assignedMechanic,
+      id
+    ],
+    function(err) {
+
+      if (err) {
+
+        return res.status(500).json({
+          message: err.message
+        });
+
+      }
+
+      res.json({
+        message:
+          "Booking Updated Successfully"
+      });
+
+    }
+  );
+
 });
 
-//Update Status
-router.put("/:id/status", (req, res) => {
-    const { status} = req.body;
-
-    db.run(
-        `
-        UPDATE service_bookings
-        SET status = ?
-        WHERE id = ?
-        `,
-        [status, req.params.id],
-        function (err) {
-            if (err) {
-                return res.status(500).json({
-                    message: err.message
-                });
-            }
-
-            res.json({
-                message: "Status Updated"
-            });
-        }
-    );
 });
 
 module.exports = router;

@@ -11,6 +11,7 @@ import Dashboard from "./pages/Dashboard";
 import Vehicle from "./pages/Vehicle";
 import Booking from "./pages/Booking";
 import Invoice from "./pages/Invoice";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
@@ -35,22 +36,30 @@ function App() {
 
         <Route
           path="/dashboard"
-          element={<Dashboard />}
+          element={<ProtectedRoute>
+      <Dashboard />
+    </ProtectedRoute>}
         />
 
         <Route
           path="/vehicles"
-          element={<Vehicle />}
+          element={<ProtectedRoute>
+      <Vehicle />
+    </ProtectedRoute>}
         />
 
         <Route
           path="/bookings"
-          element={<Booking />}
+          element={<ProtectedRoute>
+      <Booking />
+    </ProtectedRoute>}
         />
 
         <Route
           path="/invoice"
-          element={<Invoice />}
+          element={<ProtectedRoute>
+      <Invoice />
+    </ProtectedRoute>}
         />
 
       </Routes>
