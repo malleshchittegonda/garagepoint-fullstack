@@ -1,84 +1,152 @@
 const express = require("express");
+
 const bcrypt = require("bcryptjs");
+
 const jwt = require("jsonwebtoken");
-const db = require("../config/db");
 
 const router = express.Router();
 
-// Register
+const db = require("../database/db");
+
+const SECRET_KEY = "garagepoint_secret";
+
 router.post("/register", async (req, res) => {
-  const { name, email, password, role } = req.body;
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+  const {
+    name,
+    email,
+    password,
+    role
+  } = req.body;
 
-  const sql = `
-    INSERT INTO users(name, email, password, role)
-    VALUES (?, ?, ?, ?)
-  `;
+  try {
 
-  db.run(
-    sql,
-    [name, email, hashedPassword, role],
-    function (err) {
-      if (err) {
-        return res.status(500).json({
-          message: err.message,
+    const hashedPassword =
+      await bcrypt.hash(password, 10);
+
+    const sql = `
+      
+      INSERT INTO users
+      (
+        name,
+        email,
+        password,
+        role
+      )
+      
+      VALUES (?, ?, ?, ?)
+
+    `;
+
+    db.run(
+      sql,
+      [
+        name,
+        email,
+        hashedPassword,
+        role
+      ],
+      function(err) {
+
+        if (err) {
+
+          return res.status(500).json({
+            message: err.message
+          });
+
+        }
+
+        res.json({
+          message: "User Registered Successfully"
         });
-      }
 
-      res.json({
-        message: "User Registered",
-      });
-    }
-  );
+      }
+    );
+
+  } catch (error) {
+
+    res.status(500).json({
+      message: "Server Error"
+    });
+
+  }
+
 });
 
-//Login
 router.post("/login", (req, res) => {
-    const {email, password} = req.body;
 
-    db.get(
-        `SELECT * FROM users WHERE email = ?`,
-        [email],
-        async (err, user) => {
-            if (err) {
-                return res.status(500).json({
-                    message: err.message,
-                });
-            }
+  const {
+    email,
+    password
+  } = req.body;
 
-            if (!user) {
-                return res.status(404).json({
-                    message: "User not found",
-                });
-            }
+  const sql = `
+    
+    SELECT * FROM users
+    
+    WHERE email = ?
 
-            const isMatch = await bcrypt.compare(
-                password,
-                user.password
-            );
+  `;
 
-            if (!isMatch) {
-                return res.status(400).json({
-                    message: "Invalid password",
-                });
-            }
+  db.get(
+    sql,
+    [email],
+    async (err, user) => {
 
-            const token = jwt.sign(
-                {
-                    id: user.id,
-                    role: user.role,
-                },
-                "garagepointsecret"
-            );
+      if (err) {
 
-            res.json({
-                message: "Login Success",
-                token,
-                user,
-            });
+        return res.status(500).json({
+          message: err.message
+        });
+
+      }
+
+      if (!user) {
+
+        return res.status(400).json({
+          message: "User Not Found"
+        });
+
+      }
+
+      const isMatch =
+        await bcrypt.compare(
+          password,
+          user.password
+        );
+
+      if (!isMatch) {
+
+        return res.status(400).json({
+          message: "Invalid Password"
+        });
+
+      }
+
+      const token = jwt.sign(
+        {
+          id: user.id,
+          role: user.role
+        },
+        SECRET_KEY,
+        {
+          expiresIn: "1d"
         }
-    );
+      );
+
+      res.json({
+        message: "Login Successful",
+        token,
+        user: {
+          id: user.id,
+          name: user.name,
+          role: user.role
+        }
+      });
+
+    }
+  );
+
 });
 
 module.exports = router;

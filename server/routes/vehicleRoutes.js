@@ -2,7 +2,7 @@ const express = require("express");
 
 const router = express.Router();
 
-let vehicles = [];
+const db = require("../database/db");
 
 router.post("/", (req, res) => {
 
@@ -13,32 +13,75 @@ router.post("/", (req, res) => {
     year
   } = req.body;
 
-  const newVehicle = {
-    id: Date.now(),
-    vehicleNumber,
-    brand,
-    model,
-    year
-  };
+  const sql = `
+    
+    INSERT INTO vehicles
+    (
+      vehicleNumber,
+      brand,
+      model,
+      year
+    )
+    
+    VALUES (?, ?, ?, ?)
 
-  vehicles.push(newVehicle);
+  `;
 
-  res.json({
-    message: "Vehicle Added Successfully",
-    vehicles
-  });
+  db.run(
+    sql,
+    [
+      vehicleNumber,
+      brand,
+      model,
+      year
+    ],
+    function(err) {
+
+      if (err) {
+
+        return res.status(500).json({
+          message: err.message
+        });
+
+      }
+
+      res.json({
+        message: "Vehicle Added Successfully",
+        id: this.lastID
+      });
+
+    }
+  );
 
 });
 
 router.get("/", (req, res) => {
 
-  res.json(vehicles);
+  const sql = `
+    
+    SELECT * FROM vehicles
+    
+  `;
+
+  db.all(sql, [], (err, rows) => {
+
+    if (err) {
+
+      return res.status(500).json({
+        message: err.message
+      });
+
+    }
+
+    res.json(rows);
+
+  });
 
 });
 
 router.put("/:id", (req, res) => {
 
-  const id = parseInt(req.params.id);
+  const id = req.params.id;
 
   const {
     vehicleNumber,
@@ -47,43 +90,79 @@ router.put("/:id", (req, res) => {
     year
   } = req.body;
 
-  vehicles = vehicles.map((vehicle) => {
+  const sql = `
+    
+    UPDATE vehicles
+    
+    SET
+      vehicleNumber = ?,
+      brand = ?,
+      model = ?,
+      year = ?
+    
+    WHERE id = ?
 
-    if (vehicle.id === id) {
+  `;
 
-      return {
-        ...vehicle,
-        vehicleNumber,
-        brand,
-        model,
-        year
-      };
+  db.run(
+    sql,
+    [
+      vehicleNumber,
+      brand,
+      model,
+      year,
+      id
+    ],
+    function(err) {
+
+      if (err) {
+
+        return res.status(500).json({
+          message: err.message
+        });
+
+      }
+
+      res.json({
+        message: "Vehicle Updated Successfully"
+      });
 
     }
-
-    return vehicle;
-
-  });
-
-  res.json({
-    message: "Vehicle Updated Successfully",
-    vehicles
-  });
+  );
 
 });
 
 router.delete("/:id", (req, res) => {
 
-  const id = parseInt(req.params.id);
+  const id = req.params.id;
 
-  vehicles = vehicles.filter(
-    (vehicle) => vehicle.id !== id
+  const sql = `
+    
+    DELETE FROM vehicles
+    
+    WHERE id = ?
+
+  `;
+
+  db.run(
+    sql,
+    [id],
+    function(err) {
+
+      if (err) {
+
+        return res.status(500).json({
+          message: err.message
+        });
+
+      }
+
+      res.json({
+        message: "Vehicle Deleted Successfully"
+      });
+
+    }
   );
-
-  res.json({
-    message: "Vehicle Deleted Successfully",
-    vehicles
-  });
 
 });
 
