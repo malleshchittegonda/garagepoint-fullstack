@@ -85,3 +85,27 @@
   border-radius:20px;
   font-size:13px;
 }
+
+@media(max-width:900px){
+
+  .dashboard-lower{
+    grid-template-columns:1fr;
+  }
+
+}
+
+@media(max-width:768px){
+
+  .dashboard-container{
+    flex-direction:column;
+  }
+
+  .dashboard-content{
+    padding:20px;
+  }
+
+  .stats-grid{
+    grid-template-columns:1fr;
+  }
+
+}

@@ -139,3 +139,19 @@ td {
 .complete-btn:hover{
   background:#1d4ed8;
 }
+
+@media(max-width:768px){
+
+  .booking-container{
+    flex-direction:column;
+  }
+
+  .booking-sections{
+    grid-template-columns:1fr;
+  }
+
+  table{
+    font-size:12px;
+  }
+
+}

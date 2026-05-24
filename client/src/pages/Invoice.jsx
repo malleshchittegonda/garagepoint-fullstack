@@ -1,115 +1,180 @@
+import {
+  useState,
+  useEffect
+} from "react";
+
 import Sidebar from "../components/Sidebar";
+
 import "../styles/Invoice.css";
 
+import API from "../services/api";
+
+import jsPDF from "jspdf";
+
 function Invoice() {
+
+  const [bookings, setBookings] =
+    useState([]);
+
+  const fetchBookings = async () => {
+
+    try {
+
+      const res = await API.get(
+        "/bookings"
+      );
+
+      setBookings(res.data);
+
+    } catch (error) {
+
+      console.log(error);
+
+    }
+
+  };
+
+  useEffect(() => {
+
+    fetchBookings();
+
+  }, []);
+
+  const downloadInvoice = (booking) => {
+
+    const doc = new jsPDF();
+
+    doc.setFontSize(22);
+
+    doc.text(
+      "GaragePoint Invoice",
+      20,
+      20
+    );
+
+    doc.setFontSize(14);
+
+    doc.text(
+      `Vehicle: ${booking.vehicleNumber}`,
+      20,
+      50
+    );
+
+    doc.text(
+      `Service: ${booking.serviceType}`,
+      20,
+      65
+    );
+
+    doc.text(
+      `Date: ${booking.bookingDate}`,
+      20,
+      80
+    );
+
+    doc.text(
+      `Status: ${booking.status}`,
+      20,
+      95
+    );
+
+    doc.text(
+      `Mechanic: ${
+        booking.assignedMechanic
+        || "Not Assigned"
+      }`,
+      20,
+      110
+    );
+
+    doc.text(
+      "Service Charge: ₹2500",
+      20,
+      140
+    );
+
+    doc.text(
+      "Thank you for choosing GaragePoint!",
+      20,
+      180
+    );
+
+    doc.save(
+      `${booking.vehicleNumber}_invoice.pdf`
+    );
+
+  };
+
   return (
+
     <div className="invoice-container">
 
       <Sidebar />
 
       <div className="invoice-content">
 
-        <div className="invoice-top">
+        <h1>
+          Invoices
+        </h1>
 
-          <h1>
-            Invoice & Billing
-          </h1>
+        <div className="invoice-grid">
 
-          <div className="profile-box">
-            Mallesh
-          </div>
+          {
 
-        </div>
+            bookings.map((booking) => (
 
-        <div className="invoice-card">
+              <div
+                className="invoice-card"
+                key={booking.id}
+              >
 
-          <div className="invoice-header">
+                <h2>
+                  {booking.vehicleNumber}
+                </h2>
 
-            <div>
-              <h2>GaragePoint</h2>
+                <p>
+                  {booking.serviceType}
+                </p>
 
-              <p>
-                Vehicle Service Invoice
-              </p>
-            </div>
+                <p>
+                  {booking.bookingDate}
+                </p>
 
-            <div>
-              <h3>Invoice #1024</h3>
+                <span
+                  className={
+                    booking.status ===
+                    "Completed"
+                      ? "completed"
+                      : "pending"
+                  }
+                >
 
-              <p>Date: 26 May 2026</p>
-            </div>
+                  {booking.status}
 
-          </div>
+                </span>
 
-          <div className="customer-details">
+                <button
+                  onClick={() =>
+                    downloadInvoice(booking)
+                  }
+                >
 
-            <div>
-              <h4>Customer</h4>
+                  Download PDF
 
-              <p>Mallesh</p>
+                </button>
 
-              <p>TS09 EE 1234</p>
-            </div>
+              </div>
 
-            <div>
-              <h4>Service Details</h4>
+            ))
 
-              <p>General Service</p>
-
-              <p>Oil Change Included</p>
-            </div>
-
-          </div>
-
-          <table>
-
-            <thead>
-
-              <tr>
-                <th>Service</th>
-                <th>Cost</th>
-              </tr>
-
-            </thead>
-
-            <tbody>
-
-              <tr>
-                <td>General Service</td>
-                <td>₹2500</td>
-              </tr>
-
-              <tr>
-                <td>Oil Change</td>
-                <td>₹1200</td>
-              </tr>
-
-              <tr>
-                <td>Brake Check</td>
-                <td>₹800</td>
-              </tr>
-
-            </tbody>
-
-          </table>
-
-          <div className="invoice-total">
-
-            <h2>
-              Total: ₹4500
-            </h2>
-
-          </div>
-
-          <button className="download-btn">
-            Download Invoice
-          </button>
+          }
 
         </div>
 
       </div>
 
     </div>
+
   );
 }
 

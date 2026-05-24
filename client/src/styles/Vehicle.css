@@ -87,3 +87,15 @@
 .edit-btn:hover{
   background:#1d4ed8;
 }
+
+@media(max-width:768px){
+
+  .vehicle-container{
+    flex-direction:column;
+  }
+
+  .vehicle-grid{
+    grid-template-columns:1fr;
+  }
+
+}

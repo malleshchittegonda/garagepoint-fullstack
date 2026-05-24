@@ -79,3 +79,23 @@
 .logout-btn:hover{
   background:#b91c1c;
 }
+
+@media(max-width:768px){
+
+  .sidebar{
+    width:100%;
+    min-height:auto;
+  }
+
+  .sidebar ul{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    justify-content:center;
+  }
+
+  .sidebar ul li{
+    margin-bottom:0;
+  }
+
+}
