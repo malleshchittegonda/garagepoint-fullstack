@@ -1,10 +1,16 @@
-import { Link, useNavigate } from "react-router-dom";
+import {
+  Link,
+  useNavigate
+} from "react-router-dom";
 
 import "../styles/Sidebar.css";
 
 function Sidebar() {
 
   const navigate = useNavigate();
+
+  const user =
+    JSON.parse(localStorage.getItem("user"));
 
   const logout = () => {
 
@@ -20,33 +26,60 @@ function Sidebar() {
 
     <div className="sidebar">
 
-      <h2 className="sidebar-logo">
-        GaragePoint
-      </h2>
+      <div>
 
-      <ul>
+        <h2 className="sidebar-logo">
+          GaragePoint
+        </h2>
 
-        <Link to="/dashboard">
-          <li>Dashboard</li>
-        </Link>
+        <div className="profile-section">
 
-        <Link to="/vehicles">
-          <li>Vehicles</li>
-        </Link>
+          <div className="profile-circle">
+            {
+              user?.name?.charAt(0)
+            }
+          </div>
 
-        <Link to="/bookings">
-          <li>Bookings</li>
-        </Link>
+          <h3>
+            {user?.name}
+          </h3>
 
-        <Link to="/invoice">
-          <li>Invoices</li>
-        </Link>
+          <p>
+            {user?.role}
+          </p>
 
-        <li onClick={logout}>
-          Logout
-        </li>
+        </div>
 
-      </ul>
+        <ul>
+
+          <Link to="/dashboard">
+            <li>Dashboard</li>
+          </Link>
+
+          <Link to="/vehicles">
+            <li>Vehicles</li>
+          </Link>
+
+          <Link to="/bookings">
+            <li>Bookings</li>
+          </Link>
+
+          <Link to="/invoice">
+            <li>Invoices</li>
+          </Link>
+
+        </ul>
+
+      </div>
+
+      <button
+        className="logout-btn"
+        onClick={logout}
+      >
+
+        Logout
+
+      </button>
 
     </div>
 

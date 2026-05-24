@@ -1,61 +1,65 @@
 const express = require("express");
-const db = require("../config/db");
 
 const router = express.Router();
 
-router.get("/summary", (req, res) => {
-  db.all(
-    `SELECT * FROM service_bookings`,
+const db = require("../database/db");
+
+router.get("/", (req, res) => {
+
+  const analytics = {};
+
+  db.get(
+    "SELECT COUNT(*) AS totalVehicles FROM vehicles",
     [],
-    (err, bookings) => {
-      if (err) {
-        return res.status(500).json({
-          message: err.message
-        });
-      }
+    (err, vehicleData) => {
 
-      db.all(
-        `SELECT * FROM invoices`,
+      analytics.totalVehicles =
+        vehicleData.totalVehicles;
+
+      db.get(
+        "SELECT COUNT(*) AS totalBookings FROM bookings",
         [],
-        (err, invoices) => {
-          if (err) {
-            return res.status(500).json({
-              message: err.message
-            });
-          }
+        (err, bookingData) => {
 
-          const totalBookings =
-            bookings.length;
+          analytics.totalBookings =
+            bookingData.totalBookings;
 
-          const completedServices =
-            bookings.filter(
-              (item) =>
-                item.status === "Delivered"
-            ).length;
+          db.get(
+            `
+            SELECT COUNT(*) AS completedServices
+            
+            FROM bookings
+            
+            WHERE status = 'Completed'
+            `,
+            [],
+            (err, completedData) => {
 
-          const pendingServices =
-            bookings.filter(
-              (item) =>
-                item.status !== "Delivered"
-            ).length;
+              analytics.completedServices =
+                completedData.completedServices;
 
-          const totalRevenue =
-            invoices.reduce(
-              (sum, invoice) =>
-                sum + invoice.total,
-              0
-            );
+              db.get(
+                "SELECT COUNT(*) AS totalUsers FROM users",
+                [],
+                (err, userData) => {
 
-          res.json({
-            totalBookings,
-            completedServices,
-            pendingServices,
-            totalRevenue
-          });
+                  analytics.totalUsers =
+                    userData.totalUsers;
+
+                  res.json(analytics);
+
+                }
+              );
+
+            }
+          );
+
         }
       );
+
     }
   );
+
 });
 
 module.exports = router;

@@ -1,41 +1,81 @@
-.sidebar {
-  width: 240px;
-
-  height: 100vh;
-
-  background: #0f172a;
-
-  color: white;
-
-  padding: 30px 20px;
+.sidebar{
+  width:260px;
+  background:#111827;
+  color:white;
+  min-height:100vh;
+  padding:30px 20px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
 }
 
-.sidebar-logo {
-  margin-bottom: 40px;
-
-  font-size: 28px;
+.sidebar-logo{
+  font-size:28px;
+  margin-bottom:30px;
+  text-align:center;
 }
 
-.sidebar ul {
-  list-style: none;
+.profile-section{
+  text-align:center;
+  margin-bottom:40px;
 }
 
-.sidebar li {
-  padding: 15px;
-
-  margin-bottom: 15px;
-
-  border-radius: 10px;
-
-  cursor: pointer;
-
-  transition: 0.3s;
+.profile-circle{
+  width:80px;
+  height:80px;
+  background:#2563eb;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:32px;
+  font-weight:bold;
+  margin:auto;
+  margin-bottom:15px;
 }
 
-.sidebar li:hover {
-  background: #2563eb;
+.profile-section h3{
+  margin-bottom:5px;
 }
 
-.active {
-  background: #2563eb;
+.profile-section p{
+  color:#9ca3af;
+  text-transform:capitalize;
+}
+
+.sidebar ul{
+  list-style:none;
+  padding:0;
+}
+
+.sidebar ul a{
+  text-decoration:none;
+}
+
+.sidebar ul li{
+  padding:15px 20px;
+  margin-bottom:12px;
+  border-radius:10px;
+  cursor:pointer;
+  color:white;
+  transition:0.3s;
+}
+
+.sidebar ul li:hover{
+  background:#2563eb;
+}
+
+.logout-btn{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:10px;
+  background:#dc2626;
+  color:white;
+  font-size:16px;
+  cursor:pointer;
+}
+
+.logout-btn:hover{
+  background:#b91c1c;
 }
