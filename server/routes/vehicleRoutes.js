@@ -1,63 +1,90 @@
 const express = require("express");
-const db = require("../config/db");
 
 const router = express.Router();
 
-//Add Vehicle
-router.post("/",(req, res) => {
-    const {
-        customer_id,
-        vehicle_number,
+let vehicles = [];
+
+router.post("/", (req, res) => {
+
+  const {
+    vehicleNumber,
+    brand,
+    model,
+    year
+  } = req.body;
+
+  const newVehicle = {
+    id: Date.now(),
+    vehicleNumber,
+    brand,
+    model,
+    year
+  };
+
+  vehicles.push(newVehicle);
+
+  res.json({
+    message: "Vehicle Added Successfully",
+    vehicles
+  });
+
+});
+
+router.get("/", (req, res) => {
+
+  res.json(vehicles);
+
+});
+
+router.put("/:id", (req, res) => {
+
+  const id = parseInt(req.params.id);
+
+  const {
+    vehicleNumber,
+    brand,
+    model,
+    year
+  } = req.body;
+
+  vehicles = vehicles.map((vehicle) => {
+
+    if (vehicle.id === id) {
+
+      return {
+        ...vehicle,
+        vehicleNumber,
         brand,
-        model
-    } = req.body;
+        model,
+        year
+      };
 
-    const sql = `
-        INSERT INTO vehicles(
-            customer_id,
-            vehicle_number,
-            brand,
-            model
-        )
-        VALUES(?, ?, ?, ?)
-    `;
+    }
 
-    db.run(
-        sql,
-        [
-            customer_id,
-            vehicle_number,
-            brand,
-            model
-        ],
-        function (err) {
-            if(err) {
-                return res.status(500).json({
-                    message: err.message
-                });
-            }
+    return vehicle;
 
-            res.json({
-                message: "Vehicle Added"
-            });
-        }
-    );
+  });
+
+  res.json({
+    message: "Vehicle Updated Successfully",
+    vehicles
+  });
+
 });
 
-//Get Vehicles
-router.get("/",(req, res) => {
-    db.all(
-        `SELECT * FROM vehicles`,
-        [],
-        (err, rows) => {
-            if(err) {
-                return res.status(500).json({
-                    message: err.message
-                });
-            }
+router.delete("/:id", (req, res) => {
 
-            res.json(rows);
-        }
-    );
+  const id = parseInt(req.params.id);
+
+  vehicles = vehicles.filter(
+    (vehicle) => vehicle.id !== id
+  );
+
+  res.json({
+    message: "Vehicle Deleted Successfully",
+    vehicles
+  });
+
 });
+
 module.exports = router;

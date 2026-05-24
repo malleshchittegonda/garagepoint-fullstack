@@ -1,0 +1,89 @@
+.vehicle-container{
+  display:flex;
+  background:#f4f7fc;
+  min-height:100vh;
+}
+
+.vehicle-content{
+  flex:1;
+  padding:40px;
+}
+
+.vehicle-content h1{
+  margin-bottom:30px;
+}
+
+.vehicle-sections{
+  display:flex;
+  gap:30px;
+}
+
+.add-vehicle{
+  background:white;
+  padding:30px;
+  border-radius:12px;
+  width:350px;
+  box-shadow:0 2px 10px rgba(0,0,0,0.1);
+}
+
+.add-vehicle form{
+  display:flex;
+  flex-direction:column;
+}
+
+.add-vehicle input{
+  margin-bottom:15px;
+  padding:12px;
+  border:1px solid #ccc;
+  border-radius:8px;
+}
+
+.add-vehicle button{
+  padding:12px;
+  background:#2563eb;
+  color:white;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+.vehicle-list{
+  flex:1;
+}
+
+.vehicle-card{
+  background:white;
+  padding:20px;
+  border-radius:12px;
+  margin-bottom:20px;
+  box-shadow:0 2px 10px rgba(0,0,0,0.1);
+}
+
+.delete-btn{
+  margin-top:10px;
+  padding:10px 15px;
+  background:#dc2626;
+  color:white;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+.delete-btn:hover{
+  background:#b91c1c;
+}
+
+.edit-btn{
+  margin-top:10px;
+  margin-right:10px;
+  padding:10px 15px;
+  background:#2563eb;
+  color:white;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+.edit-btn:hover{
+  background:#1d4ed8;
+}
