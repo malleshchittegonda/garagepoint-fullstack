@@ -1,7 +1,11 @@
-const Database = require("better-sqlite3");
+const sqlite3 = require("sqlite3").verbose();
 
-const db = new Database("garagepoint.db");
-
-console.log("SQLite Connected");
+const db = new sqlite3.Database("./garagepoint.db", (err) => {
+  if (err) {
+    console.log(err.message);
+  } else {
+    console.log("SQLite Connected");
+  }
+});
 
 module.exports = db;
